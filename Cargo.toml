@@ -6,17 +6,16 @@ edition = "2018"
 
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
+[dependencies]
+uows-crypto = "0"
+
 [dependencies.mongodb]
-version = "1"
-default-features = false
-features = [
-    "async-std-runtime"
-]
+version = "2.0.0-alpha"
 
 [dependencies.tokio]
-version = "0.2"
+version = "1"
 features = [
+    "rt-multi-thread",
     "macros",
-    "rt-threaded",
     "fs"
 ]
