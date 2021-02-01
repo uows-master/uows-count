@@ -17,5 +17,6 @@ version = "1"
 features = [
     "rt-multi-thread",
     "macros",
-    "fs"
+    "fs",
+    "time"
 ]
