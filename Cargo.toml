@@ -8,6 +8,7 @@ edition = "2018"
 
 [dependencies]
 uows-crypto = "0"
+warp = "0"
 
 [dependencies.mongodb]
 version = "2.0.0-alpha"
