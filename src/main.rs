@@ -24,7 +24,7 @@ async fn main() {
             StatusCode::ACCEPTED
         });
 
-    warp::serve(vote).run(([127, 0, 0, 1], 5000)).await;
+    warp::serve(vote).run(([0, 0, 0, 0], 5000)).await;
 
     /* let reciept = dbase
     .collection("candidates")
