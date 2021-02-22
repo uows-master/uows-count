@@ -1,4 +1,6 @@
 use actix_web::{get, middleware::Logger, App, HttpRequest, HttpResponse, HttpServer, Responder};
+use clap::App as Capp;
+use clap::load_yaml;
 
 mod inits;
 use inits::*;
@@ -7,13 +9,6 @@ use inits::*;
 async fn handle(k: Key, count: Gcounter, req: HttpRequest) -> impl Responder {
     let name = req.match_info().get("name").unwrap();
     let key = req.match_info().get("key").unwrap();
-
-    // println!(
-    //     "skey: {}\nrkey: {}\nCandidate: {}",
-    //     k.lock().unwrap().as_str(),
-    //     key,
-    //     name
-    // );
 
     if k.lock().unwrap().as_str() != key {
         HttpResponse::BadRequest().body("<h1>Error 400 Bad Request</h1><p>Invalid key</p>")
@@ -32,17 +27,40 @@ async fn handle(k: Key, count: Gcounter, req: HttpRequest) -> impl Responder {
 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
-    let count = init("count.json");
-    let k = initkey("key");
+    let conf = load_yaml!("cli.yml");
+    let matches = Capp::from_yaml(conf).get_matches();
+    
+    let bind = matches.value_of("bind").unwrap();
+    let keyf = matches.value_of("keyfile").unwrap();
+    let clist = matches.value_of("candidatelist").unwrap();
+    let log = matches.is_present("log");
+    
+    if matches.is_present("sslcert") {
+        panic!("SSL is not currently implemented");
+    };
 
-    HttpServer::new(move || {
-        App::new()
-            .wrap(Logger::default())
-            .app_data(k.clone())
-            .app_data(count.clone())
-            .service(handle)
-    })
-    .bind("0.0.0.0:5000")?
-    .run()
-    .await
+    let count = init(clist);
+    let k = initkey(keyf);
+
+    if log {
+        println!("Logging is still not functioning properly");
+        println!("Server has started");
+        std::env::set_var("RUST_LOG", "my_errors=debug,actix_web=info");
+        std::env::set_var("RUST_BACKTRACE", "1");
+        HttpServer::new(move || {
+            App::new()
+                .app_data(k.clone())
+                .app_data(count.clone())
+                .wrap(Logger::default())
+                .service(handle)
+        }).bind(bind).unwrap().run().await
+    } else {
+        println!("Server has started");
+        HttpServer::new(move || {
+            App::new()
+                .app_data(k.clone())
+                .app_data(count.clone())
+                .service(handle)
+        }).bind(bind).unwrap().run().await
+    }
 }

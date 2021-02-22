@@ -1,5 +1,5 @@
 name: "UOWS Count Server"
-version: "0.2.0"
+version: "0.1.0"
 author: "Saadi Save, Varun Jain"
 about: "Server responsible for counting votes in the UOWS ecosystem"
 args:
@@ -10,18 +10,27 @@ args:
         help: Type the entire IP Address, with port. e.g. "0.0.0.0:5000"
         takes_value: true
         required: true
-    - candidateslist:
+    - candidatelist:
         short: cL
         long: clist
-        value_name: FILE
+        value_name: JSON FILE
         help: The file containing a list of candidates, one on each line
         takes_value: true
         required: true
-    - keyfile
+    - keyfile:
         short: k
         long: kfile
         value_name: FILE
         help: File containing the key, single line
         takes_value: true
         required: true
-    
+    - sslcert:
+        short: s
+        long: sslcert
+        value_name: PEM FILE
+        help: (Currently not working) File with ssl certificate. Also enables SSL.
+        takes_value: true
+    - log:
+        short: l
+        long: log
+        help: (Currently not working) Enables logging
