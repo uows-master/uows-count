@@ -1,39 +1,48 @@
-mod db;
-mod handlers;
+use actix_web::{get, middleware::Logger, App, HttpRequest, HttpResponse, HttpServer, Responder};
+
 mod inits;
-mod routes;
+use inits::*;
 
-// use mongodb::bson::doc;
-use tokio::time::Instant;
-use warp::{self, http::StatusCode, Filter};
+#[get("/candidate/{key}/{name}")]
+async fn handle(k: Key, count: Gcounter, req: HttpRequest) -> impl Responder {
+    let name = req.match_info().get("name").unwrap();
+    let key = req.match_info().get("key").unwrap();
 
-#[tokio::main]
-async fn main() {
-    // The current server can only receive a name at
-    // localhost:5000/candidate/<name> and print it to the console
+    // println!(
+    //     "skey: {}\nrkey: {}\nCandidate: {}",
+    //     k.lock().unwrap().as_str(),
+    //     key,
+    //     name
+    // );
 
-    let now = Instant::now();
+    if k.lock().unwrap().as_str() != key {
+        HttpResponse::BadRequest().body("<h1>Error 400 Bad Request</h1><p>Invalid key</p>")
+    } else {
+        let mut cnt = count.lock().unwrap();
+        if cnt.contains(name) {
+            cnt.increment(name);
+            update("count.json", &cnt);
+            HttpResponse::Accepted().body("<h1>Success 202 Accepted</h1><p>Your vote is being processed. It is guaranteed to be counted</p>")
+        } else {
+            HttpResponse::BadRequest()
+                .body("<h1>Error 400 Bad Request</h1><p>Invalid Candidate name</p>")
+        }
+    }
+}
 
-    let dbase = db::init(([127, 0, 0, 1], 27017), "UOWS").await;
-    inits::init_candidates(&dbase, "clist.txt").await;
+#[actix_web::main]
+async fn main() -> std::io::Result<()> {
+    let count = init("count.json");
+    let k = initkey("key");
 
-    let vote = warp::path("candidate")
-        .and(warp::path::param())
-        .map(|name: String| {
-            println!("{}", &name);
-            StatusCode::ACCEPTED
-        });
-
-    warp::serve(vote).run(([0, 0, 0, 0], 5000)).await;
-
-    /* let reciept = dbase
-    .collection("candidates")
-    .find(doc! {}, None)
+    HttpServer::new(move || {
+        App::new()
+            .wrap(Logger::default())
+            .app_data(k.clone())
+            .app_data(count.clone())
+            .service(handle)
+    })
+    .bind("0.0.0.0:5000")?
+    .run()
     .await
-    .unwrap(); */
-
-    let then = now.elapsed();
-
-    // println!("{:#?}", reciept);
-    println!("Time: {:?}", then);
 }

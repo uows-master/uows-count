@@ -1,25 +1,23 @@
-#![allow(dead_code)]
-use mongodb::{bson::doc, Database};
-use tokio::fs::read_to_string;
-use uows_crypto::Data;
+use std::{
+    fs::{read_to_string, write},
+    sync::Mutex,
+};
 
-pub async fn init_candidates(db: &Database, clistfile: &str) {
-    let collection = db.collection("candidates");
+mod types;
+pub use types::*;
 
-    let candidates = read_to_string(clistfile).await.unwrap();
+pub fn init(path: &str) -> Gcounter {
+    let s = read_to_string(path).unwrap();
+    let x: InnerMap = serde_json::from_str(s.as_str()).unwrap();
 
-    for c in candidates.split('\n') {
-        collection
-            .insert_one(doc! {"name": c, "votes": 0}, None)
-            .await
-            .unwrap();
-    }
+    Gcounter::new(Mutex::new(Counter::new(x)))
 }
 
-pub async fn init_enc(keyfile: &str) -> Data {
-    let keystr = read_to_string(keyfile).await.unwrap();
+pub fn update(path: &str, count: &Counter) {
+    let s = serde_json::to_string(count).unwrap();
+    write(path, s.as_str()).unwrap();
+}
 
-    let kvec: Vec<&str> = keystr.split('\n').collect();
-
-    Data::new(kvec[0], kvec[1])
+pub fn initkey(path: &str) -> Key {
+    Key::new(Mutex::new(read_to_string(path).unwrap()))
 }
