@@ -1,3 +1,9 @@
+# Copyright (C) 2021 Saadi Save, Varun Jain
+# Licenced under the GNU Affero General Public License
+# (see LICENSE.md or <https://www.gnu.org/licenses/agpl-3.0.en.html>)
+# All files in the project carrying such notice may not be copied, modified, or
+# distributed except according to those terms.
+
 name: "UOWS Count Server"
 version: "0.1.0"
 author: "Saadi Save, Varun Jain"
@@ -11,12 +17,18 @@ args:
         takes_value: true
         required: true
     - candidatelist:
-        short: cL
+        short: c
         long: clist
-        value_name: JSON FILE
+        value_name: FILE
         help: The file containing a list of candidates, one on each line
         takes_value: true
         required: true
+    - countfile:
+        short: C
+        long: cfile
+        value_name: JSON FILE
+        help: The file in which the vote counts are stored
+        takes_value: true
     - keyfile:
         short: k
         long: kfile
@@ -24,13 +36,27 @@ args:
         help: File containing the key, single line
         takes_value: true
         required: true
-    - sslcert:
-        short: s
-        long: sslcert
-        value_name: PEM FILE
-        help: (Currently not working) File with ssl certificate. Also enables SSL.
-        takes_value: true
     - log:
         short: l
         long: log
-        help: (Currently not working) Enables logging
+        help: Enables logging
+    - init:
+        short: i
+        long: init
+        help: (re)initialise the server
+    - secure:
+        short: s
+        long: sec
+        help: Enable SSL. MUST provide -p and -z
+    - privkey:
+        short: p
+        long: pkey
+        value_name: PEM FILE
+        help: File with ssl private key
+        takes_value: true
+    - sslcert:
+        short: z
+        long: cert
+        value_name: PEM FILE
+        help: File with ssl certificate
+        takes_value: true
