@@ -29,7 +29,7 @@ features = [
 ]
 
 [dependencies.clap]
-version = "2.33"
+version = "3.0.0-beta.2"
 features = [
     "yaml"
 ]

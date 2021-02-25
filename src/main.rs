@@ -40,7 +40,7 @@ async fn handle(k: Key, count: Gcounter, cpath: Internalpath, req: HttpRequest) 
 #[actix_web::main]
 async fn main() -> std::io::Result<()> {
     let conf = load_yaml!("cli.yml");
-    let matches = Capp::from_yaml(conf).get_matches();
+    let matches = Capp::from(conf).get_matches();
 
     let bind = matches.value_of("bind").unwrap();
     let keyf = matches.value_of("keyfile").unwrap();
