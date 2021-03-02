@@ -6,8 +6,9 @@
 
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
-use super::types::{Accepted, BadRequest, Gpayload};
+use super::types::{Accepted, BadRequest, Counter, Gpayload};
 use rocket::State;
+use rocket_contrib::json::Json;
 
 #[get("/vote/<key>/<name>")]
 pub async fn vote(
@@ -15,18 +16,32 @@ pub async fn vote(
     key: String,
     name: String,
 ) -> Result<Accepted, BadRequest> {
-    let mut p = payload.lock().await;
+    let mut pld = payload.lock().await;
 
-    if !(p.key == key) {
+    if !(pld.key == key) {
         return Err(BADKEY);
     }
 
-    if p.count.contains(&name) {
-        p.count.increment(&name);
-        update(&p.datafile, &p.count).await;
+    if pld.count.contains(&name) {
+        pld.count.increment(&name);
+        update(&pld.datafile, &pld.count).await;
     } else {
         return Err(BADCAND);
     }
 
     Ok(ACCEPTED)
+}
+
+#[get("/<key>/count")]
+pub async fn get_count(
+    payload: State<'_, Gpayload>,
+    key: String,
+) -> Result<Json<Counter>, BadRequest> {
+    let pld = payload.lock().await;
+
+    if !(pld.key == key) {
+        return Err(BADKEY);
+    }
+
+    Ok(Json(pld.count.clone()))
 }

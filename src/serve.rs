@@ -35,5 +35,5 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
 
     rocket::custom(figment)
         .manage(payload)
-        .mount("/", routes![vote])
+        .mount("/", routes![vote, get_count])
 }
