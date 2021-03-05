@@ -18,9 +18,9 @@ args:
         required: true
     - log:
         short: l
-        help: Enable logging. Log level is decided by the number of -l flags passed. It ranges from 0 (off) to 3 (debug). Refer to the manpage for more details.
+        help: Enable logging. Log level is decided by the number of -l flags passed. It ranges from 0 (off) to 3 (debug). Refer to the readme for more details.
         multiple: true
         takes_value: false
     - reset:
         short: r
-        help: Resets the countfile.
+        help: Resets the datafile.
