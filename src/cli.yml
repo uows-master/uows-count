@@ -5,7 +5,7 @@
 # distributed except according to those terms.
 
 name: "UOWS Count Server"
-version: "0.1.1"
+version: "0.1.0"
 author: "Saadi Save, Varun Jain"
 about: "Server responsible for counting votes in the UOWS ecosystem"
 args:

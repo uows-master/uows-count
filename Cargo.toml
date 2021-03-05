@@ -1,6 +1,6 @@
 [package]
 name = "uows-count"
-version = "0.0.3-alpha"
+version = "0.1.0"
 authors = ["SaadiSave <https://github.com/SaadiSave>"]
 edition = "2018"
 
