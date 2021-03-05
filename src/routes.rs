@@ -6,7 +6,7 @@
 
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
-use super::types::{Accepted, BadRequest, Counter, Gpayload};
+use super::types::{Accepted, BadRequest, Candidates, Counter, Gcandidates, Gpayload};
 use rocket::State;
 use rocket_contrib::json::Json;
 
@@ -39,9 +39,22 @@ pub async fn get_count(
 ) -> Result<Json<Counter>, BadRequest> {
     let pld = payload.lock().await;
 
-    if !(pld.key == key) {
+    if pld.key != key {
         return Err(BADKEY);
     }
 
     Ok(Json(pld.count.clone()))
+}
+
+#[get("/<key>/candidates")]
+pub async fn get_candidates(
+    payload: State<'_, Gpayload>,
+    candidates: State<'_, Gcandidates>,
+    key: String,
+) -> Result<Json<Candidates>, BadRequest> {
+    if payload.lock().await.key != key {
+        return Err(BADKEY);
+    }
+
+    Ok(Json(candidates.lock().await.clone()))
 }

@@ -11,6 +11,7 @@ use std::collections::BTreeMap;
 
 pub type Inmap = BTreeMap<String, u32>;
 pub type Gpayload = Mutex<Payload>;
+pub type Gcandidates = Mutex<Candidates>;
 
 #[derive(Deserialize)]
 pub struct Conf {
@@ -76,4 +77,13 @@ pub struct Payload {
     pub count: Counter,
     pub key: String,
     pub datafile: String,
+}
+
+#[derive(Serialize, Clone)]
+pub struct Candidates(Vec<String>);
+
+impl Candidates {
+    pub fn new(candidates: Vec<String>) -> Candidates {
+        Candidates(candidates)
+    }
 }

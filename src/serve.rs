@@ -6,7 +6,7 @@
 
 use super::inits::*;
 use super::routes::*;
-use super::types::{Conf, Gpayload, Payload};
+use super::types::{Conf, Gcandidates, Gpayload, Payload};
 
 pub async fn serve(conf: &Conf) -> rocket::Rocket {
     let k = init_key(&conf.keyfile).await;
@@ -22,6 +22,8 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
         datafile: dfile.clone(),
     });
 
+    let candidates = Gcandidates::new(init_candidates(&conf.candidatesfile).await);
+
     let mut figment = rocket::Config::figment()
         .merge(("address", conf.address.as_ref().unwrap()))
         .merge(("port", conf.port.unwrap()))
@@ -35,5 +37,6 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
 
     rocket::custom(figment)
         .manage(payload)
-        .mount("/", routes![vote, get_count])
+        .manage(candidates)
+        .mount("/", routes![vote, get_count, get_candidates])
 }
