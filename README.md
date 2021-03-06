@@ -51,7 +51,7 @@ A low `ulimit` setting may cause the server to fail due to opening too many file
 # The ip address. Defaults to 127.0.0.1
 address = "127.0.0.1"
 
-# The listening port. Defaults to 5000
+# The listening port. Defaults to 8000
 port = 8080
 
 # The file with the candidate list. One candidate per line. No defaults.
