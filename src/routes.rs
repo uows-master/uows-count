@@ -19,7 +19,7 @@ pub async fn vote(
 ) -> Result<Accepted, BadRequest> {
     let mut pld = payload.lock().await;
 
-    if !(pld.key == key) {
+    if pld.key != key {
         return Err(BADKEY);
     }
 

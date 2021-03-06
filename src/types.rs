@@ -29,6 +29,14 @@ pub struct Conf {
 }
 
 impl Conf {
+    pub fn check(&self) {
+        if self.secure != Some(false) {
+            if self.cert == None || self.pkey == None {
+                panic!("SSL cannot be used without the ceritifcate and private key")
+            }
+        }
+    }
+
     pub fn get_log_level(&self) -> &str {
         match self.log_level {
             Some(i) => match i {

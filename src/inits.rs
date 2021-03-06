@@ -89,6 +89,8 @@ pub async fn parse_args() -> Conf {
         None => Some(false),
     };
 
+    conf.check();
+
     conf
 }
 

@@ -1,8 +1,19 @@
 # uows-count
 
+[![GitHub Workflow Status](https://img.shields.io/github/workflow/status/uows-master/uows-count/Rust?logo=github)](https://github.com/uows-master/uows-count/actions)
+
 The server responsible for counting votes the UOWS ecosystem.
 
-### Usage
+## Installation
+1. Go to releases
+2. Download a binary for your OS and architecture
+3. Rename it according to your own convinience
+4. Either\
+Execute the binary in place\
+OR\
+Add the binary/folder containing the binary to your `PATH`
+
+## Usage
     UOWS Count Server <version>
     Saadi Save, Varun Jain
     Server responsible for counting votes in the UOWS ecosystem
@@ -14,13 +25,13 @@ The server responsible for counting votes the UOWS ecosystem.
         -h, --help       Prints help information
         -l               Enable logging. Log level is decided by the number of -l flags passed. It
                         ranges from 0 (off) to 3 (debug). Refer to the readme for more details.
-        -r               Resets the countfile.
+        -r               Resets the datafile.
         -V, --version    Prints version information
 
     OPTIONS:
         -c <TOML FILE>        The server configuration file, in toml
 
-#### Examples
+### Examples
 - `uows-count -c Config.toml` \
 Only gives the config file. The data file is not reset. No logging.
 - `uows-count -c Config.toml -r` \
@@ -32,23 +43,41 @@ All requests, config, etc. are logged
 - `uows-count -c Config.toml -lll` \
 Debug level logging. Should only be used during development.
 
-### Configuration
+### __[Important]__ Linux `ulimit` considerations
+A low `ulimit` setting may cause the server to fail due to opening too many files. Therefore, it is recommended to run `ulimit -n 40000` in the terminal before starting the server.
 
-### Recommended Usage
-1. Recommended config:
+## Configuration
 ```toml
-address = "any address"
-port = X443
-keyfile = "file with key"
-datafile = "file with the count"
-candidatesfile = "file with the candidate list"
-secure = "true"
-cert = "File with ssl certificate"
-pkey = "File with ssl private key"
-```
-2. Start the server with `uows-count -c Config.toml -r`
-3. Ctrl-C immediately
-4. Start the server with `uows-count -c Config.toml -l`
-5. Ctrl-C after the voting time is over
+# The ip address. Defaults to 127.0.0.1
+address = "127.0.0.1"
 
-[Still under progress]
+# The listening port. Defaults to 5000
+port = 8080
+
+# The file with the candidate list. One candidate per line. No defaults.
+# The server will panic if absent.
+candidatesfile = "candidates"
+
+# The file where the vote counts are stored in json format. Defaults to count.json.
+datafile = "count.json"
+
+# The file for the access key. No defaults. Server will panic if absent.
+keyfile = "key"
+
+# Enables SSL. Defaults to false.
+secure = "true"
+
+# The file for SSL certificate. No defaults. Server will panic if SSL is
+# enabled, but this is absent.
+cert = "private/cert.pem"
+
+# The file for SSL private key. No defaults. Server will panic if SSL is
+# enabled, but this is absent.
+pkey = "private/key.pem"
+
+# Sets log level. Ignored if -l flags are passed in the CLI.
+log_level = 2
+```
+
+## Recommended Usage
+Still under discussion
