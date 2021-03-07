@@ -10,9 +10,9 @@ use rocket::tokio::sync::Mutex;
 use serde::{Deserialize, Serialize};
 use std::collections::BTreeMap;
 
-pub type Inmap = BTreeMap<String, u32>;
-pub type Gpayload = Mutex<Payload>;
-pub type Gcandidates = Mutex<Candidates>;
+pub type InMap = BTreeMap<String, u32>;
+pub type GPayload = Mutex<Payload>;
+pub type GCPayload = Mutex<CPayload>;
 
 #[derive(Deserialize)]
 pub struct Conf {
@@ -30,10 +30,8 @@ pub struct Conf {
 
 impl Conf {
     pub fn check(&self) {
-        if self.secure != Some(false) {
-            if self.cert == None || self.pkey == None {
-                panic!("SSL cannot be used without the ceritifcate and private key")
-            }
+        if self.secure != Some(false) && (self.cert == None || self.pkey == None) {
+            panic!("SSL cannot be used without the ceritifcate and private key")
         }
     }
 
@@ -43,7 +41,6 @@ impl Conf {
                 0 => "off",
                 1 => "critical",
                 2 => "normal",
-                3 => "debug",
                 _ => "debug",
             },
             None => "normal",
@@ -52,10 +49,10 @@ impl Conf {
 }
 
 #[derive(Serialize, Deserialize, Clone)]
-pub struct Counter(Inmap);
+pub struct Counter(InMap);
 
 impl Counter {
-    pub fn new(i: Inmap) -> Counter {
+    pub fn new(i: InMap) -> Counter {
         Counter(i)
     }
     pub fn increment(&mut self, name: &str) {
@@ -95,4 +92,10 @@ impl Candidates {
     pub fn new(candidates: Vec<String>) -> Candidates {
         Candidates(candidates)
     }
+}
+
+#[derive(Clone)]
+pub struct CPayload {
+    pub key: String,
+    pub candidates: Candidates
 }

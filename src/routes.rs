@@ -7,13 +7,13 @@
 
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
-use super::types::{Accepted, BadRequest, Candidates, Counter, Gcandidates, Gpayload};
+use super::types::{Accepted, BadRequest, Candidates, Counter, GCPayload, GPayload};
 use rocket::State;
 use rocket_contrib::json::Json;
 
 #[get("/vote/<key>/<name>")]
 pub async fn vote(
-    payload: State<'_, Gpayload>,
+    payload: State<'_, GPayload>,
     key: String,
     name: String,
 ) -> Result<Accepted, BadRequest> {
@@ -35,7 +35,7 @@ pub async fn vote(
 
 #[get("/<key>/count")]
 pub async fn get_count(
-    payload: State<'_, Gpayload>,
+    payload: State<'_, GPayload>,
     key: String,
 ) -> Result<Json<Counter>, BadRequest> {
     let pld = payload.lock().await;
@@ -49,13 +49,12 @@ pub async fn get_count(
 
 #[get("/<key>/candidates")]
 pub async fn get_candidates(
-    payload: State<'_, Gpayload>,
-    candidates: State<'_, Gcandidates>,
+    candidatespld: State<'_, GCPayload>,
     key: String,
 ) -> Result<Json<Candidates>, BadRequest> {
-    if payload.lock().await.key != key {
+    if candidatespld.lock().await.key != key {
         return Err(BADKEY);
     }
 
-    Ok(Json(candidates.lock().await.clone()))
+    Ok(Json(candidatespld.lock().await.candidates.clone()))
 }

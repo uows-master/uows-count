@@ -5,25 +5,30 @@
 // All files in the project carrying such notice may not be copied, modified, or
 // distributed except according to those terms.
 
-use super::inits::*;
-use super::routes::*;
-use super::types::{Conf, Gcandidates, Gpayload, Payload};
+use super::inits::{init, init_candidates, init_key, reset_n_init};
+use super::routes::{vote, get_candidates, get_count};
+use super::types::{Conf, GCPayload, CPayload, GPayload, Payload};
 
 pub async fn serve(conf: &Conf) -> rocket::Rocket {
     let k = init_key(&conf.keyfile).await;
     let dfile = conf.datafile.as_ref().unwrap().to_owned();
-    let cnt = match conf.reset.unwrap() {
-        true => reset_n_init(&conf.candidatesfile, &dfile).await,
-        false => init(&dfile).await,
+
+    let cnt = if conf.reset.unwrap() {
+        reset_n_init(&conf.candidatesfile, &dfile).await
+    } else {
+        init(&dfile).await
     };
 
-    let payload = Gpayload::new(Payload {
+    let payload = GPayload::new(Payload {
         count: cnt.clone(),
         key: k.clone(),
         datafile: dfile.clone(),
     });
 
-    let candidates = Gcandidates::new(init_candidates(&conf.candidatesfile).await);
+    let candidatespld = GCPayload::new(CPayload {
+        key: k.clone(),
+        candidates: init_candidates(&conf.candidatesfile).await,
+    });
 
     let mut figment = rocket::Config::figment()
         .merge(("address", conf.address.as_ref().unwrap()))
@@ -38,6 +43,6 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
 
     rocket::custom(figment)
         .manage(payload)
-        .manage(candidates)
+        .manage(candidatespld)
         .mount("/", routes![vote, get_count, get_candidates])
 }

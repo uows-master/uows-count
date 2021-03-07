@@ -8,28 +8,30 @@ The server responsible for counting votes the UOWS ecosystem.
 1. Go to releases
 2. Download a binary for your OS and architecture
 3. Rename it according to your own convinience
-4. Either\
-Execute the binary in place\
-OR\
+4. Either \
+Execute the binary in place \
+OR \
 Add the binary/folder containing the binary to your `PATH`
 
 ## Usage
-    UOWS Count Server <version>
-    Saadi Save, Varun Jain
-    Server responsible for counting votes in the UOWS ecosystem
+```text
+UOWS Count Server <version>
+Saadi Save, Varun Jain
+Server responsible for counting votes in the UOWS ecosystem
 
-    USAGE:
-        uows-count [FLAGS] -c <TOML FILE>
+USAGE:
+    uows-count [FLAGS] -c <TOML FILE>
 
-    FLAGS:
-        -h, --help       Prints help information
-        -l               Enable logging. Log level is decided by the number of -l flags passed. It
-                        ranges from 0 (off) to 3 (debug). Refer to the readme for more details.
-        -r               Resets the datafile.
-        -V, --version    Prints version information
+FLAGS:
+    -h, --help       Prints help information
+    -l               Enable logging. Log level is decided by the number of -l flagspassed. It
+                     ranges from 0 (off) to 3 (debug). Refer to the readme for more details.
+    -r               Resets the datafile.
+    -V, --version    Prints version information
 
-    OPTIONS:
-        -c <TOML FILE>        The server configuration file, in toml
+OPTIONS:
+    -c <TOML FILE>        The server configuration file, in toml
+```
 
 ### Examples
 - `uows-count -c Config.toml` \

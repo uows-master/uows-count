@@ -5,14 +5,14 @@
 // All files in the project carrying such notice may not be copied, modified, or
 // distributed except according to those terms.
 
-use super::types::{Candidates, Conf, Counter, Inmap};
+use super::types::{Candidates, Conf, Counter, InMap};
 use clap::{load_yaml, App};
 use rocket::tokio::fs::{read_to_string, write};
 
 pub async fn init(datafile: &str) -> Counter {
     let s = read_to_string(datafile).await.unwrap();
 
-    let x: Inmap = serde_json::from_str(s.as_str()).unwrap();
+    let x: InMap = serde_json::from_str(s.as_str()).unwrap();
 
     Counter::new(x)
 }
@@ -20,13 +20,13 @@ pub async fn init(datafile: &str) -> Counter {
 pub async fn init_candidates(candidatesfile: &str) -> Candidates {
     let s = read_to_string(candidatesfile).await.unwrap();
 
-    let v: Vec<String> = s.split('\n').map(|x| x.to_string()).collect();
+    let v: Vec<String> = s.split('\n').map(std::string::ToString::to_string).collect();
 
     Candidates::new(v)
 }
 
 pub async fn reset_n_init(candidatesfile: &str, datafile: &str) -> Counter {
-    let mut x = Inmap::new();
+    let mut x = InMap::new();
 
     let s = read_to_string(candidatesfile).await.unwrap();
 
