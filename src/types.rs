@@ -6,13 +6,10 @@
 // distributed except according to those terms.
 
 use rocket::http::ContentType;
-use rocket::tokio::sync::Mutex;
 use serde::{Deserialize, Serialize};
-use std::collections::BTreeMap;
+use std::{collections::BTreeMap, sync::atomic::AtomicU32};
 
-pub type InMap = BTreeMap<String, u32>;
-pub type GPayload = Mutex<Payload>;
-pub type GCPayload = Mutex<CPayload>;
+pub type InMap = BTreeMap<String, AtomicU32>;
 
 #[derive(Deserialize)]
 pub struct Conf {
@@ -48,15 +45,18 @@ impl Conf {
     }
 }
 
-#[derive(Serialize, Deserialize, Clone)]
+#[derive(Serialize, Deserialize)]
 pub struct Counter(InMap);
 
 impl Counter {
     pub fn new(i: InMap) -> Counter {
         Counter(i)
     }
-    pub fn increment(&mut self, name: &str) {
-        self.0.entry(name.to_string()).and_modify(|e| *e += 1);
+    pub fn increment(&self, name: &str) {
+        self.0
+            .get(name)
+            .unwrap()
+            .fetch_add(1, std::sync::atomic::Ordering::SeqCst);
     }
 
     pub fn contains(&self, name: &str) -> bool {
@@ -78,9 +78,36 @@ pub struct BadRequest {
     pub header: ContentType,
 }
 
-#[derive(Clone)]
-pub struct Payload {
+#[derive(Responder)]
+#[response(status = 200, content_type = "application/json")]
+pub struct JsonResponse {
+    pub inner: String,
+    pub header: ContentType,
+}
+
+impl From<&Counter> for JsonResponse {
+    fn from(counter: &Counter) -> Self {
+        JsonResponse {
+            inner: serde_json::to_string(counter).unwrap(),
+            header: ContentType::JSON,
+        }
+    }
+}
+
+impl From<&Candidates> for JsonResponse {
+    fn from(candidates: &Candidates) -> Self {
+        JsonResponse {
+            inner: serde_json::to_string(candidates).unwrap(),
+            header: ContentType::JSON,
+        }
+    }
+}
+
+pub struct GCounter {
     pub count: Counter,
+}
+
+pub struct Payload {
     pub key: String,
     pub datafile: String,
 }
@@ -95,7 +122,7 @@ impl Candidates {
 }
 
 #[derive(Clone)]
-pub struct CPayload {
+pub struct GCandidates {
     pub key: String,
-    pub candidates: Candidates
+    pub candidates: Candidates,
 }

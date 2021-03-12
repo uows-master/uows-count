@@ -7,25 +7,23 @@
 
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
-use super::types::{Accepted, BadRequest, Candidates, Counter, GCPayload, GPayload};
+use super::types::{Accepted, BadRequest, GCandidates, GCounter, JsonResponse, Payload};
 use rocket::State;
-use rocket_contrib::json::Json;
 
 #[get("/vote/<key>/<name>")]
 pub async fn vote(
-    payload: State<'_, GPayload>,
+    counter: State<'_, GCounter>,
+    payload: State<'_, Payload>,
     key: String,
     name: String,
 ) -> Result<Accepted, BadRequest> {
-    let mut pld = payload.lock().await;
-
-    if pld.key != key {
+    if payload.key != key {
         return Err(BADKEY);
     }
 
-    if pld.count.contains(&name) {
-        pld.count.increment(&name);
-        update(&pld.datafile, &pld.count).await;
+    if counter.count.contains(&name) {
+        counter.count.increment(&name);
+        update(&payload.datafile, &counter.count).await;
     } else {
         return Err(BADCAND);
     }
@@ -33,28 +31,27 @@ pub async fn vote(
     Ok(ACCEPTED)
 }
 
-#[get("/<key>/count")]
+#[get("/count/<key>")]
 pub async fn get_count(
-    payload: State<'_, GPayload>,
+    counter: State<'_, GCounter>,
+    payload: State<'_, Payload>,
     key: String,
-) -> Result<Json<Counter>, BadRequest> {
-    let pld = payload.lock().await;
-
-    if pld.key != key {
+) -> Result<JsonResponse, BadRequest> {
+    if payload.key != key {
         return Err(BADKEY);
     }
 
-    Ok(Json(pld.count.clone()))
+    Ok(JsonResponse::from(&counter.count))
 }
 
-#[get("/<key>/candidates")]
+#[get("/candidates/<key>")]
 pub async fn get_candidates(
-    candidatespld: State<'_, GCPayload>,
+    gcandidates: State<'_, GCandidates>,
     key: String,
-) -> Result<Json<Candidates>, BadRequest> {
-    if candidatespld.lock().await.key != key {
+) -> Result<JsonResponse, BadRequest> {
+    if gcandidates.key != key {
         return Err(BADKEY);
     }
 
-    Ok(Json(candidatespld.lock().await.candidates.clone()))
+    Ok(JsonResponse::from(&gcandidates.candidates))
 }

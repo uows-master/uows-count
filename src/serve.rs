@@ -6,29 +6,32 @@
 // distributed except according to those terms.
 
 use super::inits::{init, init_candidates, init_key, reset_n_init};
-use super::routes::{vote, get_candidates, get_count};
-use super::types::{Conf, GCPayload, CPayload, GPayload, Payload};
+use super::routes::{get_candidates, get_count, vote};
+use super::types::{Conf, GCandidates, GCounter, Payload};
 
 pub async fn serve(conf: &Conf) -> rocket::Rocket {
     let k = init_key(&conf.keyfile).await;
     let dfile = conf.datafile.as_ref().unwrap().to_owned();
 
-    let cnt = if conf.reset.unwrap() {
-        reset_n_init(&conf.candidatesfile, &dfile).await
-    } else {
-        init(&dfile).await
+    let counter = GCounter {
+        count: {
+            if conf.reset.unwrap() {
+                reset_n_init(&conf.candidatesfile, &dfile).await
+            } else {
+                init(&dfile).await
+            }
+        },
     };
 
-    let payload = GPayload::new(Payload {
-        count: cnt.clone(),
+    let payload = Payload {
         key: k.clone(),
         datafile: dfile.clone(),
-    });
+    };
 
-    let candidatespld = GCPayload::new(CPayload {
+    let gcandidates = GCandidates {
         key: k.clone(),
         candidates: init_candidates(&conf.candidatesfile).await,
-    });
+    };
 
     let mut figment = rocket::Config::figment()
         .merge(("address", conf.address.as_ref().unwrap()))
@@ -43,6 +46,7 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
 
     rocket::custom(figment)
         .manage(payload)
-        .manage(candidatespld)
+        .manage(gcandidates)
+        .manage(counter)
         .mount("/", routes![vote, get_count, get_candidates])
 }

@@ -8,6 +8,7 @@
 use super::types::{Candidates, Conf, Counter, InMap};
 use clap::{load_yaml, App};
 use rocket::tokio::fs::{read_to_string, write};
+use std::sync::atomic::AtomicU32;
 
 pub async fn init(datafile: &str) -> Counter {
     let s = read_to_string(datafile).await.unwrap();
@@ -20,7 +21,10 @@ pub async fn init(datafile: &str) -> Counter {
 pub async fn init_candidates(candidatesfile: &str) -> Candidates {
     let s = read_to_string(candidatesfile).await.unwrap();
 
-    let v: Vec<String> = s.split('\n').map(std::string::ToString::to_string).collect();
+    let v: Vec<String> = s
+        .split('\n')
+        .map(std::string::ToString::to_string)
+        .collect();
 
     Candidates::new(v)
 }
@@ -31,7 +35,7 @@ pub async fn reset_n_init(candidatesfile: &str, datafile: &str) -> Counter {
     let s = read_to_string(candidatesfile).await.unwrap();
 
     for i in s.split('\n') {
-        x.insert(i.to_string(), 0);
+        x.insert(i.to_string(), AtomicU32::from(0));
     }
 
     let cnt = Counter::new(x);

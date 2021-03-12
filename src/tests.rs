@@ -1,4 +1,2 @@
 #[cfg(test)]
-mod init_tests {
-    
-}
+mod init_tests {}
