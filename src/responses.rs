@@ -5,7 +5,7 @@
 // All files in the project carrying such notice may not be copied, modified, or
 // distributed except according to those terms.
 
-use super::types::{Accepted, BadRequest};
+use super::types::response::{Accepted, BadRequest};
 use rocket::http::ContentType;
 
 pub const ACCEPTED: Accepted = Accepted {

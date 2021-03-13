@@ -7,7 +7,10 @@
 
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
-use super::types::{Accepted, BadRequest, GCandidates, GCounter, JsonResponse, Payload};
+use super::types::{
+    data::{GCandidates, GCounter, Payload},
+    response::{Accepted, BadRequest, Json},
+};
 use rocket::State;
 
 #[get("/vote/<key>/<name>")]
@@ -36,22 +39,22 @@ pub async fn get_count(
     counter: State<'_, GCounter>,
     payload: State<'_, Payload>,
     key: String,
-) -> Result<JsonResponse, BadRequest> {
+) -> Result<Json, BadRequest> {
     if payload.key != key {
         return Err(BADKEY);
     }
 
-    Ok(JsonResponse::from(&counter.count))
+    Ok(Json::from(&counter.count))
 }
 
 #[get("/candidates/<key>")]
 pub async fn get_candidates(
     gcandidates: State<'_, GCandidates>,
     key: String,
-) -> Result<JsonResponse, BadRequest> {
+) -> Result<Json, BadRequest> {
     if gcandidates.key != key {
         return Err(BADKEY);
     }
 
-    Ok(JsonResponse::from(&gcandidates.candidates))
+    Ok(Json::from(&gcandidates.candidates))
 }

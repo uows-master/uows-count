@@ -5,7 +5,10 @@
 // All files in the project carrying such notice may not be copied, modified, or
 // distributed except according to those terms.
 
-use super::types::{Candidates, Conf, Counter, InMap};
+use super::types::{
+    config::Conf,
+    data::{Candidates, Counter, InMap},
+};
 use clap::{load_yaml, App};
 use rocket::tokio::fs::{read_to_string, write};
 use std::sync::atomic::AtomicU32;

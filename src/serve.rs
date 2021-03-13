@@ -7,7 +7,10 @@
 
 use super::inits::{init, init_candidates, init_key, reset_n_init};
 use super::routes::{get_candidates, get_count, vote};
-use super::types::{Conf, GCandidates, GCounter, Payload};
+use super::types::{
+    config::Conf,
+    data::{GCandidates, GCounter, Payload},
+};
 
 pub async fn serve(conf: &Conf) -> rocket::Rocket {
     let k = init_key(&conf.keyfile).await;
