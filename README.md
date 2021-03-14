@@ -5,6 +5,7 @@
 The server responsible for counting votes the UOWS ecosystem.
 
 ## Installation
+
 1. Go to releases
 2. Download a binary for your OS and architecture
 3. Rename it according to your own convinience
@@ -14,6 +15,7 @@ OR \
 Add the binary/folder containing the binary to your `PATH`
 
 ## Usage
+
 ```text
 UOWS Count Server <version>
 Saadi Save, Varun Jain
@@ -34,6 +36,7 @@ OPTIONS:
 ```
 
 ### Examples
+
 - `uows-count -c Config.toml` \
 Only gives the config file. The data file is not reset. No logging.
 - `uows-count -c Config.toml -r` \
@@ -46,9 +49,11 @@ All requests, config, etc. are logged
 Debug level logging. Should only be used during development.
 
 ### __[Important]__ Linux `ulimit` considerations
+
 A low `ulimit` setting may cause the server to fail due to opening too many files. Therefore, it is recommended to run `ulimit -n 40000` in the terminal before starting the server.
 
 ## Configuration
+
 ```toml
 # The ip address. Defaults to 127.0.0.1
 address = "127.0.0.1"
@@ -82,4 +87,5 @@ log_level = 2
 ```
 
 ## Recommended Usage
+
 Still under discussion
