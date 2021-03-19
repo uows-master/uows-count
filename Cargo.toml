@@ -31,3 +31,10 @@ version = "0.5.0-dev"
 features = [
     "tls"
 ]
+
+[dev-dependencies.tokio]
+version = "1"
+features = [
+    "macros",
+    "rt-multi-thread"
+]

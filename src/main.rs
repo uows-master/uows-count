@@ -98,8 +98,10 @@ mod inits;
 mod responses;
 mod routes;
 mod serve;
-mod tests;
 mod types;
+
+#[cfg(test)]
+mod tests;
 
 #[launch]
 async fn rocket() -> rocket::Rocket {
