@@ -38,7 +38,7 @@ pub struct Payload {
     pub datafile: String,
 }
 
-#[derive(Serialize)]
+#[derive(Serialize, PartialEq, Debug)]
 pub struct Candidates(Vec<String>);
 
 impl Candidates {

@@ -101,7 +101,7 @@ pub async fn parse_args() -> Conf {
     conf
 }
 
-async fn init_conf(confile: &str) -> Conf {
+pub async fn init_conf(confile: &str) -> Conf {
     let s = read_to_string(confile).await.unwrap();
 
     let x: Conf = toml::from_str(s.as_str()).unwrap();

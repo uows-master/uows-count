@@ -6,6 +6,7 @@
 // distributed except according to those terms.
 
 use serde::Deserialize;
+use std::net::{Ipv4Addr, Ipv6Addr};
 
 #[derive(Deserialize)]
 pub struct Conf {
@@ -25,6 +26,18 @@ impl Conf {
     pub fn check(&self) {
         if self.secure != Some(false) && (self.cert == None || self.pkey == None) {
             panic!("SSL cannot be used without the ceritifcate and private key")
+        }
+
+        let valid = match self.address.as_ref().unwrap().parse::<Ipv4Addr>() {
+            Ok(_) => true,
+            Err(_) => false,
+        } || match self.address.as_ref().unwrap().parse::<Ipv6Addr>() {
+            Ok(_) => true,
+            Err(_) => false,
+        };
+
+        if !valid {
+            panic!("The IP address entered is not a valid IPv4 or IPv6 address")
         }
     }
 
