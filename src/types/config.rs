@@ -28,15 +28,9 @@ impl Conf {
             panic!("SSL cannot be used without the ceritifcate and private key")
         }
 
-        let valid = match self.address.as_ref().unwrap().parse::<Ipv4Addr>() {
-            Ok(_) => true,
-            Err(_) => false,
-        } || match self.address.as_ref().unwrap().parse::<Ipv6Addr>() {
-            Ok(_) => true,
-            Err(_) => false,
-        };
-
-        if !valid {
+        if self.address.as_ref().unwrap().parse::<Ipv4Addr>().is_err()
+            && self.address.as_ref().unwrap().parse::<Ipv6Addr>().is_err()
+        {
             panic!("The IP address entered is not a valid IPv4 or IPv6 address")
         }
     }

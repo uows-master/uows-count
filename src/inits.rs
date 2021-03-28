@@ -65,36 +65,20 @@ pub async fn parse_args() -> Conf {
 
     let mut conf = init_conf(matches.value_of("config").unwrap()).await;
 
-    if matches.is_present("reset") {
-        conf.reset = Some(true)
-    } else {
-        conf.reset = Some(false)
-    }
+    conf.reset = Some(conf.reset.unwrap_or(matches.is_present("reset")));
 
-    conf.port = match conf.port {
-        Some(i) => Some(i),
-        None => Some(8000),
-    };
+    conf.port = Some(conf.port.unwrap_or(8000));
 
-    conf.address = match conf.address {
-        Some(s) => Some(s),
-        None => Some("127.0.0.1".to_string()),
-    };
+    conf.address = Some(conf.address.unwrap_or("127.0.0.1".to_string()));
 
-    conf.datafile = match conf.datafile {
-        Some(s) => Some(s),
-        None => Some("count.json".to_string()),
-    };
+    conf.datafile = Some(conf.datafile.unwrap_or("count.json".to_string()));
 
-    conf.log_level = match conf.log_level {
-        Some(i) => Some(i),
-        None => Some(matches.occurrences_of("log") as u8),
-    };
+    conf.log_level = Some(
+        conf.log_level
+            .unwrap_or(matches.occurrences_of("log") as u8),
+    );
 
-    conf.secure = match conf.secure {
-        Some(b) => Some(b),
-        None => Some(false),
-    };
+    conf.secure = Some(conf.secure.unwrap_or(false));
 
     conf.check();
 
