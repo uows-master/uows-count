@@ -32,6 +32,18 @@ pub async fn init_candidates(candidatesfile: &str) -> Candidates {
     Candidates::new(v)
 }
 
+pub async fn init_conf(confile: &str) -> Conf {
+    let s = read_to_string(confile).await.unwrap();
+
+    let x: Conf = toml::from_str(s.as_str()).unwrap();
+
+    x
+}
+
+pub async fn init_key(keyfile: &str) -> String {
+    read_to_string(keyfile).await.unwrap()
+}
+
 pub async fn reset_n_init(candidatesfile: &str, datafile: &str) -> Counter {
     let mut x = InMap::new();
 
@@ -54,10 +66,6 @@ pub async fn update(datafile: &str, count: &Counter) {
     write(datafile, serde_json::to_string(count).unwrap())
         .await
         .unwrap();
-}
-
-pub async fn init_key(keyfile: &str) -> String {
-    read_to_string(keyfile).await.unwrap()
 }
 
 pub async fn parse_args() -> Conf {
@@ -83,12 +91,4 @@ pub async fn parse_args() -> Conf {
     conf.check();
 
     conf
-}
-
-pub async fn init_conf(confile: &str) -> Conf {
-    let s = read_to_string(confile).await.unwrap();
-
-    let x: Conf = toml::from_str(s.as_str()).unwrap();
-
-    x
 }
