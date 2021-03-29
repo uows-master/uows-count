@@ -9,31 +9,18 @@ use super::inits::{init, init_candidates, init_key, reset_n_init};
 use super::routes::{get_candidates, get_count, vote};
 use super::types::{
     config::Conf,
-    data::{GCandidates, GCounter, Payload},
+    data::{DataFile, Key},
 };
 
 pub async fn serve(conf: &Conf) -> rocket::Rocket {
-    let k = init_key(&conf.keyfile).await;
-    let dfile = conf.datafile.as_ref().unwrap().to_owned();
+    let authkey = Key(init_key(&conf.keyfile).await);
+    let datafile = DataFile(conf.datafile.as_ref().unwrap().to_owned());
+    let candidates = init_candidates(&conf.candidatesfile).await;
 
-    let counter = GCounter {
-        count: {
-            if conf.reset.unwrap() {
-                reset_n_init(&conf.candidatesfile, &dfile).await
-            } else {
-                init(&dfile).await
-            }
-        },
-    };
-
-    let payload = Payload {
-        key: k.clone(),
-        datafile: dfile.clone(),
-    };
-
-    let gcandidates = GCandidates {
-        key: k.clone(),
-        candidates: init_candidates(&conf.candidatesfile).await,
+    let counter = if conf.reset.unwrap() {
+        reset_n_init(&conf.candidatesfile, &datafile.0).await
+    } else {
+        init(&datafile.0).await
     };
 
     let mut figment = rocket::Config::figment()
@@ -48,8 +35,9 @@ pub async fn serve(conf: &Conf) -> rocket::Rocket {
     }
 
     rocket::custom(figment)
-        .manage(payload)
-        .manage(gcandidates)
+        .manage(authkey)
+        .manage(candidates)
+        .manage(datafile)
         .manage(counter)
         .mount("/", routes![vote, get_count, get_candidates])
 }

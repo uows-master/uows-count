@@ -10,6 +10,15 @@ use std::{collections::BTreeMap, sync::atomic::AtomicU32};
 
 pub type InMap = BTreeMap<String, AtomicU32>;
 
+#[derive(Serialize, PartialEq, Debug)]
+pub struct Candidates(Vec<String>);
+
+impl Candidates {
+    pub fn new(candidates: Vec<String>) -> Candidates {
+        Candidates(candidates)
+    }
+}
+
 #[derive(Serialize, Deserialize)]
 pub struct Counter(InMap);
 
@@ -29,25 +38,6 @@ impl Counter {
     }
 }
 
-pub struct GCounter {
-    pub count: Counter,
-}
+pub struct DataFile(pub String);
 
-pub struct Payload {
-    pub key: String,
-    pub datafile: String,
-}
-
-#[derive(Serialize, PartialEq, Debug)]
-pub struct Candidates(Vec<String>);
-
-impl Candidates {
-    pub fn new(candidates: Vec<String>) -> Candidates {
-        Candidates(candidates)
-    }
-}
-
-pub struct GCandidates {
-    pub key: String,
-    pub candidates: Candidates,
-}
+pub struct Key(pub String);

@@ -8,25 +8,26 @@
 use super::inits::update;
 use super::responses::{ACCEPTED, BADCAND, BADKEY};
 use super::types::{
-    data::{GCandidates, GCounter, Payload},
+    data::{Candidates, Counter, DataFile, Key},
     response::{Accepted, BadRequest, Json},
 };
 use rocket::State;
 
 #[get("/vote/<key>/<name>")]
 pub async fn vote(
-    counter: State<'_, GCounter>,
-    payload: State<'_, Payload>,
+    authkey: State<'_, Key>,
+    counter: State<'_, Counter>,
+    datafile: State<'_, DataFile>,
     key: String,
     name: String,
 ) -> Result<Accepted, BadRequest> {
-    if payload.key != key {
+    if authkey.0 != key {
         return Err(BADKEY);
     }
 
-    if counter.count.contains(&name) {
-        counter.count.increment(&name);
-        update(&payload.datafile, &counter.count).await;
+    if counter.contains(&name) {
+        counter.increment(&name);
+        update(&datafile.0, &counter).await;
     } else {
         return Err(BADCAND);
     }
@@ -34,27 +35,28 @@ pub async fn vote(
     Ok(ACCEPTED)
 }
 
-#[get("/count/<key>")]
-pub async fn get_count(
-    counter: State<'_, GCounter>,
-    payload: State<'_, Payload>,
-    key: String,
-) -> Result<Json, BadRequest> {
-    if payload.key != key {
-        return Err(BADKEY);
-    }
-
-    Ok(Json::from(&counter.count))
-}
-
 #[get("/candidates/<key>")]
 pub async fn get_candidates(
-    gcandidates: State<'_, GCandidates>,
+    authkey: State<'_, Key>,
+    candidates: State<'_, Candidates>,
     key: String,
 ) -> Result<Json, BadRequest> {
-    if gcandidates.key != key {
+    if authkey.0 != key {
         return Err(BADKEY);
     }
 
-    Ok(Json::from(&gcandidates.candidates))
+    Ok(Json::from(candidates.inner()))
+}
+
+#[get("/count/<key>")]
+pub async fn get_count(
+    authkey: State<'_, Key>,
+    counter: State<'_, Counter>,
+    key: String,
+) -> Result<Json, BadRequest> {
+    if authkey.0 != key {
+        return Err(BADKEY);
+    }
+
+    Ok(Json::from(counter.inner()))
 }
