@@ -9,7 +9,7 @@ env:
   CARGO_TERM_COLOR: always
 
 jobs:
-  build:
+  changelog:
 
     runs-on: ubuntu-latest
 
