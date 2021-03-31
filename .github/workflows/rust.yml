@@ -28,10 +28,3 @@ jobs:
     
     - name: Release build
       run: cargo build --release
-    
-    - name: Changelog Gen
-      id: changelog
-      uses: loopwerk/conventional-changelog-action@latest
-      with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-          exclude_types: other,doc,chore
