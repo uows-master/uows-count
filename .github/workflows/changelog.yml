@@ -1,12 +1,9 @@
-name: Rust
+name: Changelog
 
 on:
   push:
     branches:
     - release
-
-env:
-  CARGO_TERM_COLOR: always
 
 jobs:
   changelog:
