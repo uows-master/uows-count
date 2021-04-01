@@ -5,8 +5,8 @@
 // All files in the project carrying such notice may not be copied, modified, or
 // distributed except according to those terms.
 
-use super::data::{Candidates, Counter};
 use rocket::http::ContentType;
+use serde::Serialize;
 
 #[derive(Responder)]
 #[response(status = 202, content_type = "text/html")]
@@ -29,19 +29,10 @@ pub struct Json {
     pub header: ContentType,
 }
 
-impl From<&Counter> for Json {
-    fn from(counter: &Counter) -> Self {
+impl<T: Serialize> From<&T> for Json {
+    fn from(input: &T) -> Self {
         Json {
-            inner: serde_json::to_string(counter).unwrap(),
-            header: ContentType::JSON,
-        }
-    }
-}
-
-impl From<&Candidates> for Json {
-    fn from(candidates: &Candidates) -> Self {
-        Json {
-            inner: serde_json::to_string(candidates).unwrap(),
+            inner: serde_json::to_string(input).unwrap(),
             header: ContentType::JSON,
         }
     }
