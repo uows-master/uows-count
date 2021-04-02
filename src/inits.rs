@@ -55,9 +55,7 @@ pub async fn reset_n_init(candidatesfile: &str, datafile: &str) -> Counter {
 
     let cnt = Counter::new(x);
 
-    write(datafile, serde_json::to_string(&cnt).unwrap())
-        .await
-        .unwrap();
+    update(datafile, &cnt).await;
 
     cnt
 }
