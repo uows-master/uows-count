@@ -67,6 +67,7 @@ async fn candidates() {
         "SPD".to_string(),
         "FDP".to_string(),
         "B90G".to_string(),
+        "DL".to_string(),
     ];
 
     assert_eq!(
