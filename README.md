@@ -1,4 +1,4 @@
-# uows-count
+# uows-count [DEPRECATED: DO NOT USE]
 
 [![GitHub Workflow Status](https://img.shields.io/github/workflow/status/uows-master/uows-count/Rust?logo=github)](https://github.com/uows-master/uows-count/actions)
 
